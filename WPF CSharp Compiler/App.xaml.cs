@@ -10,18 +10,9 @@ namespace WPF_CSharp_Compiler
     /// </summary>
     public partial class App : Application
     {
-        private const string DOTNET = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319";
-
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            try
-            {
-                await BatchFileCreation();
-                var result = GetEnvironmentVariableValue("Path");
-                if (!result.Contains(DOTNET))
-                    SetEnvironmentVariableValue("Path", result + ";" + DOTNET);
-            }
-            catch (Exception) { }
+            await BatchFileCreation();
         }
 
         private async Task BatchFileCreation()
@@ -42,23 +33,6 @@ namespace WPF_CSharp_Compiler
             {
                 await File.WriteAllTextAsync(path + filename, content);
             }
-        }
-
-        public string GetEnvironmentVariableValue(string name, bool ExpandVariables = true)
-        {
-            if (ExpandVariables)
-            {
-                return Environment.GetEnvironmentVariable(name);
-            }
-            else
-            {
-                return (string)Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment\").GetValue(name, "", Microsoft.Win32.RegistryValueOptions.DoNotExpandEnvironmentNames);
-            }
-        }
-
-        public void SetEnvironmentVariableValue(string name, string value)
-        {
-            Environment.SetEnvironmentVariable(name, value, EnvironmentVariableTarget.Machine);
         }
     }
 }

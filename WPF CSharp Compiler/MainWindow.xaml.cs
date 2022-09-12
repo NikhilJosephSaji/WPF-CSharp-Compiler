@@ -6,6 +6,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.ComponentModel;
 
 namespace WPF_CSharp_Compiler
 {
@@ -14,6 +15,10 @@ namespace WPF_CSharp_Compiler
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string DOTNET = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319";
+        private int OutLabelClick = 0;
+        private BackgroundWorker worker = new BackgroundWorker();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -22,6 +27,7 @@ namespace WPF_CSharp_Compiler
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             PrimaryCode();
+            worker.DoWork += worker_DoWork;
         }
 
         private void PrimaryCode()
@@ -141,6 +147,93 @@ namespace WPF_CSharp_Compiler
             string newpath = path;
             newpath = "c" + newpath.Substring(1) + "\\";
             res = res.Replace(newpath, "");
+        }
+
+        private void OutPutLabel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            OutLabelClick++;
+            if (OutLabelClick == 6)
+            {
+                OutLabelClick = 0;
+                SetEnvirable.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void EnvironmentVariable_Click(object sender, RoutedEventArgs e)
+        {
+            var result = (System.Windows.Controls.Button)sender;
+            if (result.Content.ToString() == "Close")
+            {
+                SetEnvirable.Visibility = Visibility.Collapsed;
+                SetEnvButtonArea.Visibility = Visibility.Visible;
+                SetEnvLoadingArea.Visibility = Visibility.Collapsed;
+            }
+            else if (result.Content.ToString() == "Set Environment Variable")
+            {
+                SetEnvButtonArea.Visibility = Visibility.Collapsed;
+                SetEnvLoadingArea.Visibility = Visibility.Visible;
+                worker.RunWorkerAsync();
+            }
+        }
+
+        private async void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke((Action)(async () =>
+           {
+               _loaderCtn2.Content = "Loading...";
+               for (int i = 0; i <= 100; i++)
+               {
+                   Percent.Content = i + " %";
+                   Progress.Value = i;
+                   await Task.Delay(70);
+
+                   if (i > 20 && i < 45)
+                       _loaderCtn2.Content = "Setting Environment Variable";
+                   if (i > 45 && i < 70)
+                       _loaderCtn2.Content = "Applying Environment Variable";
+                   if (i == 77)
+                   {
+                       try
+                       {
+                           _loaderCtn2.Content = "Applied";
+                           var result = GetEnvironmentVariableValue("Path");
+                           if (!result.Contains(DOTNET))
+                               SetEnvironmentVariableValue("Path", result + ";" + DOTNET);
+                           else
+                           {
+                               _loaderCtn2.Content = "Variable Already Exist";
+                               Progress.Value = 100;
+                               Percent.Content = 100 + " %";
+                               break;
+                           }
+                       }
+                       catch (Exception)
+                       {
+                           _loaderCtn2.Content = "Setting Environment Variable Error Run as Admin and Continue";
+                           break;
+                       }
+                   }
+                   if (i == 100)
+                       _loaderCtn2.Content = "Completed";
+               }
+           }));
+        }
+
+        public string GetEnvironmentVariableValue(string name, bool ExpandVariables = true)
+        {
+            if (ExpandVariables)
+            {
+                return Environment.GetEnvironmentVariable(name);
+            }
+            else
+            {
+                return (string)Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment\").GetValue(name, "", Microsoft.Win32.RegistryValueOptions.DoNotExpandEnvironmentNames);
+            }
+        }
+
+        public void SetEnvironmentVariableValue(string name, string value)
+        {
+            Environment.SetEnvironmentVariable(name, value, EnvironmentVariableTarget.Machine);
         }
     }
 }

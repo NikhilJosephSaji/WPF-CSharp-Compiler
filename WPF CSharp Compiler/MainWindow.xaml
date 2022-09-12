@@ -45,7 +45,7 @@
                 </ScrollViewer>
             </Grid>
             <StackPanel Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                <Label Width="60" HorizontalContentAlignment="Center" Height="30" FontSize="12" Content="Output"></Label>
+                <Label x:Name="OutPutLabel" Width="60" HorizontalContentAlignment="Center" Height="30" FontSize="12" Content="Output" MouseLeftButtonDown="OutPutLabel_MouseLeftButtonDown"></Label>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
@@ -108,6 +108,45 @@
                     <fa:ImageAwesome Icon="CircleOutlineNotch" Spin="True" SpinDuration="1" Width="50" Height="50" />
                     <Label x:Name="_loaderCtn" Content="Loading..." FontSize="16" FontWeight="Bold" Margin="0,10,0,0" Foreground="Wheat"/>
                 </WrapPanel>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="SetEnvirable" Grid.RowSpan="2" Background="SlateGray" Opacity=".8" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,0,0">
+                <Border Margin="0,0,10,0" BorderThickness="1" BorderBrush="White" CornerRadius="5" Height="30" Width="70" HorizontalAlignment="Right">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="White" Offset="0"/>
+                            <GradientStop Color="#FFF33838" Offset="1"/>
+                            <GradientStop Color="#FFEC1A1A" Offset="0.859"/>
+                            <GradientStop Color="#FFCF0F0F"/>
+                            <GradientStop Color="#FFE42525" Offset="0.096"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Button FontFamily="Segoe UI" Foreground="White" IsTabStop="True" FontWeight="SemiBold" Cursor="Hand" FontSize="14" Background="Transparent" BorderThickness="0" Margin="-1" Height="30" Width="70" Content="Close" Click="EnvironmentVariable_Click"/>
+                </Border>
+            </StackPanel>
+            <StackPanel Grid.RowSpan="2" Background="SlateGray" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity=".8">
+                <StackPanel x:Name="SetEnvButtonArea">
+                    <Border Margin="0,0,10,0" BorderThickness="1" BorderBrush="White" CornerRadius="5" Height="30" Width="180" HorizontalAlignment="Right">
+                        <Border.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White" Offset="0"/>
+                                <GradientStop Color="#FFF33838" Offset="1"/>
+                                <GradientStop Color="#FFEC1A1A" Offset="0.859"/>
+                                <GradientStop Color="#FFCF0F0F"/>
+                                <GradientStop Color="#FFE42525" Offset="0.096"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Button FontFamily="Segoe UI" Foreground="White" IsTabStop="True" FontWeight="SemiBold" Cursor="Hand" FontSize="14" Background="Transparent" BorderThickness="0" Margin="-1" Height="30" Width="180" Content="Set Environment Variable" Click="EnvironmentVariable_Click"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel x:Name="SetEnvLoadingArea" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ProgressBar x:Name="Progress" Width="170" Height="5" Foreground="Black"/>
+                        <Label x:Name="Percent" Content="100%" HorizontalAlignment="Center" FontSize="13" FontWeight="Bold" Margin="0,-2,0,0" Foreground="Wheat"/>
+                    </StackPanel>
+                    <Label x:Name="_loaderCtn2" Content="Loading..." HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="0,0,0,0" Foreground="Wheat"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>
